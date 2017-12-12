@@ -42,11 +42,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         topTextField.borderStyle = .none
         topTextField.autocapitalizationType = .allCharacters
         topTextField.backgroundColor = UIColor.clear
+        topTextField.isEnabled = false
         
         bottomTextField.textAlignment = .center
         bottomTextField.borderStyle = .none
         bottomTextField.autocapitalizationType = .allCharacters
         bottomTextField.backgroundColor = UIColor.clear
+        bottomTextField.isEnabled = false
+        print("View loaded")
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
@@ -56,6 +59,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             print("Error")
             return
         }
+        
+        // Text Field setup
+        topTextField.isEnabled = true
+        bottomTextField.isEnabled = true
+        topTextField.text = "TOP"
+        bottomTextField.text = "BOTTOM"
         
         // Get UIView of aspect scaled image and set image
         imageView.image = image
@@ -78,7 +87,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     @IBAction func cancelBarButton(_ sender: UIBarButtonItem) {
-        
+        topTextField.isEnabled = false
+        bottomTextField.isEnabled = false
+        topTextField.text = ""
+        bottomTextField.text = ""
+        imageView.image = nil
     }
     
     @IBAction func cameraBarButton(_ sender: UIBarButtonItem) {
