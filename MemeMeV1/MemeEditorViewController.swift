@@ -1,13 +1,10 @@
-    //
+//
 //  ViewController.swift
 //  MemeMeV1
 //
 //  Created by Ansuke on 12/5/17.
 //  Copyright © 2017 AM. All rights reserved.
 //
-
-// Disable text fields from showing up or being interacted with
-// Show place holder text and delete it when user first taps on text field
     
 import UIKit
 import AVFoundation
@@ -41,13 +38,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     // Move view so keyboard doesn't hide content
     @objc func keyboardWillShow(_ notification:Notification) {
-        if (memeTextFieldDelegate.activeField.tag == 1) {
+        if (bottomTextField.isFirstResponder) {
             view.frame.origin.y = 0 - getKeyboardHeight(notification)
         }
     }
     
     @objc func keyboardWillHide(_ notification:Notification) {
-        if (memeTextFieldDelegate.activeField.tag == 1) {
+        if (bottomTextField.isFirstResponder) {
             view.frame.origin.y = 0
         }
     }
@@ -90,18 +87,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         bottomTextField.defaultTextAttributes = memeTextAttributes
         
         // UITextField Attributes
-        topTextField.textAlignment = .center
-        topTextField.borderStyle = .none
-        topTextField.autocapitalizationType = .allCharacters
-        topTextField.backgroundColor = UIColor.clear
-        topTextField.isEnabled = false
-        
-        bottomTextField.textAlignment = .center
-        bottomTextField.borderStyle = .none
-        bottomTextField.autocapitalizationType = .allCharacters
-        bottomTextField.backgroundColor = UIColor.clear
-        bottomTextField.isEnabled = false
-        print("View loaded")
+        applyTextFieldAttributes(to: topTextField, alignment: .center, borderStyle: .none, autoCapitalization: .allCharacters, backgroundColor: .clear, enabled: false)
+        applyTextFieldAttributes(to: bottomTextField, alignment: .center, borderStyle: .none, autoCapitalization: .allCharacters, backgroundColor: .clear, enabled: false)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
@@ -136,13 +123,28 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         dismiss(animated: true, completion: nil)
     }
     
+    func applyTextFieldAttributes(to textField: UITextField, alignment: NSTextAlignment, borderStyle: UITextBorderStyle, autoCapitalization: UITextAutocapitalizationType, backgroundColor: UIColor, enabled: Bool) {
+        textField.textAlignment = alignment
+        textField.borderStyle = borderStyle
+        textField.autocapitalizationType = autoCapitalization
+        textField.backgroundColor = backgroundColor
+        textField.isEnabled = enabled
+    }
+    
+    func createAndPresentImagePickerController(delegate: (UIImagePickerControllerDelegate & UINavigationControllerDelegate), sourceType: UIImagePickerControllerSourceType) {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = delegate
+        imagePicker.sourceType = sourceType
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
     func save() {
         let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imageView.image!, memedImage: memedImage)
     }
     
     // Save just the view where the meme is
     func generateMemedImage() -> UIImage {
-        let yOffset = self.imageView.bounds.maxY - imageAspectRatioFrame.maxY + topToolbar.bounds.height
+        let yOffset = imageView.bounds.maxY - imageAspectRatioFrame.maxY + topToolbar.bounds.height
         
         UIGraphicsBeginImageContext(imageAspectRatioFrame.size)
         view.drawHierarchy(in: self.view.frame.offsetBy(dx: 0, dy: -yOffset), afterScreenUpdates: true)
@@ -161,13 +163,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         self.present(activityVC, animated: true, completion: nil)
         
         activityVC.completionWithItemsHandler = {(activity, completed, items, error) in
-            if (completed) {
+            if completed {
                 self.save()
             }
         }
     }
     
     @IBAction func cancelBarButton(_ sender: UIBarButtonItem) {
+        actionBarButtonOutlet.isEnabled = false
         topTextField.isEnabled = false
         bottomTextField.isEnabled = false
         topTextField.text = ""
@@ -176,16 +179,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     @IBAction func cameraBarButton(_ sender: UIBarButtonItem) {
-        let cameraPicker = UIImagePickerController()
-        cameraPicker.sourceType = .camera
-        cameraPicker.delegate = self
-        present(cameraPicker, animated: true, completion: nil)
+        createAndPresentImagePickerController(delegate: self, sourceType: .camera)
     }
     
     @IBAction func albumBarButton(_ sender: UIBarButtonItem) {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        present(imagePicker, animated: true, completion: nil)
+        createAndPresentImagePickerController(delegate: self, sourceType: .photoLibrary)
     }
 
 }
