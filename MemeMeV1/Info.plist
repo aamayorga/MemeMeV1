@@ -36,6 +36,10 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Take Pic, Make Meme</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Save meme to library</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Take meme to Library</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

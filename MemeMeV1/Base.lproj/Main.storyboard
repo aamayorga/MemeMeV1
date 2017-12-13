@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="zJ1-Wk-eeF">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="zJ1-Wk-eeF">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -44,7 +44,7 @@
                                     <constraint firstAttribute="height" constant="44" id="pbk-Xl-csJ"/>
                                 </constraints>
                                 <items>
-                                    <barButtonItem title="Action" id="59b-5V-jJe">
+                                    <barButtonItem systemItem="action" id="59b-5V-jJe">
                                         <connections>
                                             <action selector="actionBarButton:" destination="zJ1-Wk-eeF" id="POO-XS-R2f"/>
                                         </connections>
@@ -63,7 +63,7 @@
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="CGY-x5-smX">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="579"/>
                                     </imageView>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" usesAttributedText="YES" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Lrg-7H-Gyq">
+                                    <textField opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" usesAttributedText="YES" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Lrg-7H-Gyq">
                                         <rect key="frame" x="8" y="505" width="359" height="21"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <attributedString key="attributedText"/>
@@ -111,12 +111,14 @@
                         <viewLayoutGuide key="safeArea" id="ojg-lE-ciq"/>
                     </view>
                     <connections>
+                        <outlet property="actionBarButtonOutlet" destination="59b-5V-jJe" id="AVN-Rb-upG"/>
                         <outlet property="bottomTextField" destination="Lrg-7H-Gyq" id="DG7-xq-I9A"/>
                         <outlet property="bottomTextFieldConstraint" destination="H7t-ep-8ux" id="Uhv-dr-gFN"/>
                         <outlet property="cameraBarButtonOutlet" destination="23r-Yd-DGb" id="BT0-xN-esM"/>
                         <outlet property="imageView" destination="CGY-x5-smX" id="hrt-op-5Bm"/>
                         <outlet property="topTextField" destination="1gw-yX-rob" id="huG-se-2HU"/>
                         <outlet property="topTextFieldConstraint" destination="OyL-Er-sKP" id="IAZ-T1-cNH"/>
+                        <outlet property="topToolbar" destination="6kp-rO-3Ry" id="BrU-YC-JcO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ynz-Bs-dRp" userLabel="First Responder" sceneMemberID="firstResponder"/>
