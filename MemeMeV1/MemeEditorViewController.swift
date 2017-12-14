@@ -23,6 +23,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     let memedImage = UIImage()
     let memeTextFieldDelegate = MemeTextFieldDelegate()
     
+    var frameView = UIView()
     var imageAspectRatioFrame = CGRect()
     
     override func viewWillAppear(_ animated: Bool) {
@@ -55,26 +56,42 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         return keyboardSize.cgRectValue.height
     }
     
+    @objc func orientationDidChange(_ notification:Notification) {
+        updateTextFieldConstraints()
+    }
+    
     func subscribeToKeyboardNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(orientationDidChange(_:)), name: .UIDeviceOrientationDidChange, object: nil)
     }
     
     func unsubscribeFromKeyboardNotifications() {
         NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .UIDeviceOrientationDidChange, object: nil)
     }
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Enable/Disable appropriate actions
         cameraBarButtonOutlet.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
         actionBarButtonOutlet.isEnabled = false
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
-        topTextField.delegate = memeTextFieldDelegate
-        bottomTextField.delegate = memeTextFieldDelegate
+        // Get and set image from array
+        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
+            print("Error")
+            return
+        }
+        imageView.image = image
+        
+        // Get frame size of the selected image's aspect ratio
+        imageAspectRatioFrame = AVMakeRect(aspectRatio: image.size, insideRect: imageView.bounds)
+        frameView = UIView(frame: imageAspectRatioFrame)
         
         // Text Attributes Setup
         let memeTextAttributes:[String:Any] = [
@@ -83,33 +100,21 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             NSAttributedStringKey.font.rawValue: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
             NSAttributedStringKey.strokeWidth.rawValue: -5.0
         ]
-        topTextField.defaultTextAttributes = memeTextAttributes
-        bottomTextField.defaultTextAttributes = memeTextAttributes
         
-        // UITextField Attributes
-        applyTextFieldAttributes(to: topTextField, alignment: .center, borderStyle: .none, autoCapitalization: .allCharacters, backgroundColor: .clear, enabled: false)
-        applyTextFieldAttributes(to: bottomTextField, alignment: .center, borderStyle: .none, autoCapitalization: .allCharacters, backgroundColor: .clear, enabled: false)
+        // UITextField Setup
+        applyTextFieldAttributes(to: topTextField, withAttributes: memeTextAttributes, text: "TOP ")
+        applyTextFieldAttributes(to: bottomTextField, withAttributes: memeTextAttributes, text: "BOTTOM ")
+        
+        updateTextFieldConstraints()
+        
+        // Enable share button
+        actionBarButtonOutlet.isEnabled = true
+        
+        // Dismiss image picker
+        dismiss(animated: true, completion: nil)
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        
-        // Get image from array
-        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
-            print("Error")
-            return
-        }
-        
-        // Text Field setup
-        topTextField.isEnabled = true
-        bottomTextField.isEnabled = true
-        topTextField.text = "TOP "
-        bottomTextField.text = "BOTTOM "
-        
-        // Get UIView of aspect scaled image and set image
-        imageView.image = image
-        imageAspectRatioFrame = AVMakeRect(aspectRatio: image.size, insideRect: imageView.bounds)
-        let frameView = UIView(frame: imageAspectRatioFrame)
-        
+    func updateTextFieldConstraints() {
         // Update text field constraints
         topTextFieldConstraint.constant = imageView.bounds.height / 2 - frameView.frame.size.height * 0.45
         bottomTextFieldConstraint.constant = imageView.bounds.height / 2 - frameView.frame.size.height * 0.47
@@ -117,18 +122,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         // Update AutoLayout
         topTextField.superview?.setNeedsUpdateConstraints()
         topTextField.superview?.setNeedsLayout()
-        
-        actionBarButtonOutlet.isEnabled = true
-        
-        dismiss(animated: true, completion: nil)
     }
     
-    func applyTextFieldAttributes(to textField: UITextField, alignment: NSTextAlignment, borderStyle: UITextBorderStyle, autoCapitalization: UITextAutocapitalizationType, backgroundColor: UIColor, enabled: Bool) {
-        textField.textAlignment = alignment
-        textField.borderStyle = borderStyle
-        textField.autocapitalizationType = autoCapitalization
-        textField.backgroundColor = backgroundColor
-        textField.isEnabled = enabled
+    func applyTextFieldAttributes(to textField: UITextField, withAttributes attributes: [String:Any], text: String) {
+        textField.delegate = memeTextFieldDelegate
+        textField.borderStyle = .none
+        textField.autocapitalizationType = .allCharacters
+        textField.backgroundColor = .clear
+        textField.isEnabled = true
+        textField.defaultTextAttributes = attributes
+        textField.text = text
+        textField.textAlignment = .center
     }
     
     func createAndPresentImagePickerController(delegate: (UIImagePickerControllerDelegate & UINavigationControllerDelegate), sourceType: UIImagePickerControllerSourceType) {
